@@ -50,6 +50,8 @@ class Estoque
 
   def total
     @livros.size
+    puts "O total de livros no estoque é: #{@livros.size}"
+    puts "\n"
   end
 
   def adiciona(livro)
@@ -84,11 +86,11 @@ estoque.adiciona  Livro.new("The Pragmatic Programmer", 100, 1999, true)
 estoque.adiciona  Livro.new("Programming Ruby", 100, 2004, true)
 estoque.adiciona nil
 
-
 estoque.total
 estoque.exporta_csv
 
 baratos = estoque.mais_barato_que 80
 baratos.each do |livro|
-  puts livro.titulo
+  puts "\n"
+  puts "O livro mais barato é o: #{livro.titulo}, por #{livro.preco} reais."
 end
