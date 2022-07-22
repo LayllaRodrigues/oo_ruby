@@ -1,19 +1,11 @@
 require_relative "produto"
 
-class Revista
-  include Produto
+class Revista < Produto
+  include Impresso
 
-  def initialize(titulo, preco, ano_lancamento, possui_reimpressao, numero, editora)
-    @titulo = titulo
-    @ano_lancamento = ano_lancamento
-    @preco = calcula_preco(preco)
-    @possui_reimpressao = possui_reimpressao
+  def initialize(titulo, preco, ano_lancamento, numero, editora, possui_reimpressao)
+    super(titulo, preco, ano_lancamento, editora) # construtor de Produto
     @numero = numero
-    @editora = editora
-  end
-
-  def possui_reimpressao?
-    @possui_reimpressao
   end
 
   def matches?(query)
