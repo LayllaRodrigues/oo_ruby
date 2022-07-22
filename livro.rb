@@ -31,14 +31,30 @@ class Livro
     end
   end
 end
-class Estoque
-  def initialize
-    @livros = []
+
+module Contador
+  def << (livro)
+    push (livro)
+    if @maximo_necessario.nil? || @maximo_necessario < size
+      @maximo_necessario = size
+    end
+    self
   end
 
-  def exporta_csv
+  attr_reader :maximo_necessario
+end
+
+class Estoque
+  attr_reader :livros
+
+  def initialize
+    @livros = []
+    @livros.extend Contador
+  
+    def exporta_csv
     @livros.each do |livro|
       puts "#{livro.titulo},#{livro.ano_lancamento}"
+      end
     end
   end
 
@@ -54,8 +70,9 @@ class Estoque
     puts "\n"
   end
 
-  def adiciona(livro)
+  def <<(livro)
     @livros << livro if livro
+    self
   end
 
   def exporta_csv
@@ -63,8 +80,16 @@ class Estoque
       puts livro.to_csv
     end
   end
-end
 
+  def remove(livro)
+    @livros.delete livro
+  end
+
+  def maximo_necessario
+    @livros.maximo_necessario
+  end
+
+end
 
 def livro_para_newsletter(livro)
   if livro.ano_lancamento < 1999
@@ -79,18 +104,20 @@ def livro_para_newsletter(livro)
   end
 end
 
+algoritmos = Livro.new("Algoritmos", 100, 1998, true)
+ruby = Livro.new("Programming Ruby", 100, 2004, true)
+programmer = Livro.new("The Pragmatic Programmer", 100, 1999, true)
+design = Livro.new("Introdução À Arquitetura e Design de Software", 70, 2011, true)
+
 estoque = Estoque.new
-estoque.adiciona  Livro.new("Algoritmos", 100, 1998, true)
-estoque.adiciona  Livro.new("Introdução À Arquitetura e Design de Software", 70, 2011, true)
-estoque.adiciona  Livro.new("The Pragmatic Programmer", 100, 1999, true)
-estoque.adiciona  Livro.new("Programming Ruby", 100, 2004, true)
-estoque.adiciona nil
+estoque <<  algoritmos
+puts estoque.maximo_necessario
+estoque <<  ruby
+puts estoque.maximo_necessario
+estoque <<  programmer 
+puts estoque.maximo_necessario
+estoque <<  design
+puts estoque.maximo_necessario
 
-estoque.total
-estoque.exporta_csv
-
-baratos = estoque.mais_barato_que 80
-baratos.each do |livro|
-  puts "\n"
-  puts "O livro mais barato é o: #{livro.titulo}, por #{livro.preco} reais."
-end
+estoque.remove algoritmos
+puts estoque.maximo_necessario
