@@ -1,5 +1,4 @@
 
-
 module Contador
   def <<(livro)
     push (livro)

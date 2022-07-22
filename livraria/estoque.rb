@@ -9,28 +9,27 @@ class Estoque
     @livros.extend Contador
   end
 
-  def quantidade_de_vendas_por(produto, &campo)
-    @vendas.count { |venda| campo.call(venda) == campo.call(produto) }
-  end
-
-  def que_mais_vendeu_por(tipo, &campo)
-    @vendas.select { |l| l.tipo == tipo }.sort { |v1, v2| quantidade_de_vendas_por(v1, &campo) <=> quantidade_de_vendas_por(v2, &campo) }.last
-  end
-
   def method_missing(name)
     matcher = name.to_s.match "(.+)_que_mais_vendeu_por_(.+)"
     if matcher
       tipo = matcher[1]
       campo = matcher[2].to_sym
+
       que_mais_vendeu_por(tipo, &campo)
     else
       super
     end
   end
 
+  # !! operator double-bang
+  def respose_to?(name)
+    matched = name.to_s.match "(.+)_que_mais_vendeu_por_(.+)"
+    !!(matched) || super
+  end
+
   def exporta_csv
     @livros.each do |livro|
-      puts "#{livro.titulo},#{livro.ano_lancamento}"
+      puts livro.to_csv
     end
   end
 
@@ -42,19 +41,11 @@ class Estoque
 
   def total
     @livros.size
-    puts "O total de livros no estoque é: #{@livros.size}"
-    puts "\n"
   end
 
   def <<(livro)
     @livros << livro if livro
     self
-  end
-
-  def exporta_csv
-    @livros.each do |livro|
-      puts livro.to_csv
-    end
   end
 
   def vende(livro)
@@ -65,18 +56,17 @@ class Estoque
   def maximo_necessario
     @livros.maximo_necessario
   end
-end
 
-class Float
-  def para_dinheiro
-    valor = "R$" << self.to_s.tr(".", ",")
-    valor << "0" unless valor.match /(.*)(\d{2})$/
-    valor
+  private
+
+  def quantidade_de_vendas_por(produto, &campo)
+    @vendas.count { |venda| campo.call(venda) == campo.call(produto) }
   end
-end
 
-class Conversor
-  def string_para_alfanumerico(nome)
-    nome.gsub /[^\w\s]/, ""
+  def que_mais_vendeu_por(tipo, &campo)
+    @vendas.select { |produto| produto.matches?(tipo) }.sort {
+      |v1, v2|
+      quantidade_de_vendas_por(v1, &campo) <=> quantidade_de_vendas_por(v2, &campo)
+    }.last
   end
 end
