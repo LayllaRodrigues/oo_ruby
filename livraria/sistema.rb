@@ -4,11 +4,8 @@ require_relative "revista"
 require_relative "ebook"
 
 algoritmos = Livro.new("Programacao OO Ruby", 70, 2000, true, "Globo", true)
-
 livro_arquitetura_software = Livro.new("Arquitetura de software", 70, 2000, true, "Globo2", true)
-
 revista = Revista.new("Revista de Ruby", 10, 2012, true, 3, "Globo")
-
 ebook = Ebook.new("Ebook de Ruby", 10, 2012, 3, "Globo")
 
 estoque = Estoque.new
